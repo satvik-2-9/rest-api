@@ -7,9 +7,17 @@ const Product = require('../models/product');
 */
 
 router.get("/", (req, res, next) => {
-  res.status(200).json({
-    message: "handling GET request to /products",
-  });
+  Product.find()
+    .exec()
+    .then((docs) => {
+      console.log(docs);
+        res.status(200).json(docs);
+    }).catch(err => {
+      console.log(err);
+      res.status(500).json({
+        message: err
+      });
+    });
 });
 
 router.post("/", (req, res, next) => {
@@ -20,15 +28,18 @@ router.post("/", (req, res, next) => {
     });
     product.save()
         .then((result) => {
-        console.log(result);
+          console.log(result);
+          /* saved it into the database. */
+          res.status(201).json({
+            message: "handling POST request to /products",
+            createdProduct: product
+          });
         }).catch((err) => {
-            console.log(err);
+          console.log(err);
+          res.status(500).json({
+            error: err
+          });
     });
-    /* saved it into the database. */
-   res.status(201).json({
-    message: "handling POST request to /products",
-    createdProduct: product
-  });
 });
 
 router.get("/:productID", (req, res, next) => {
@@ -36,8 +47,12 @@ router.get("/:productID", (req, res, next) => {
     Product.findById(id)
         .exec()
         .then(doc => {
-            console.log(doc);
+          console.log("From database", doc);
+          if (doc) {
             res.status(200).json(doc);
+          } else {
+            res.status(404).json({ message: 'No valid entry found for provided ID' });
+          }
         })
         .catch(err => {
             console.log(err);
@@ -45,14 +60,38 @@ router.get("/:productID", (req, res, next) => {
         });
 });
 
+
 router.patch("/:productID", (req, res, next) => {
-  res.status(200).json({
-    message: "Updated Product! ",
-  });
+  const updateOps = {};
+  for (const ops of req.body) {
+    updateOps[ops.propName] = ops.value;
+  }
+  Product.updateOne({ _id: req.params.productID }, {
+    $set: updateOps
+  }).exec()
+    .then(res => {
+      console.log(res);
+      res.status(200).json(res);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+  })
 });
+
 router.delete("/:productID", (req, res, next) => {
-  res.status(200).json({
-    message: "Deleted Product! ",
-  });
+  Product.deleteOne({ _id: req.params.productID })
+    .exec()
+    .then(res => {
+      res.status(200).json(res);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      })
+    });
 });
 module.exports = router;
