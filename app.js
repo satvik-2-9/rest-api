@@ -4,7 +4,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const productRoutes = require('./api/routes/products');
-const orderRoutes = require('./api/routes/orders')
+const orderRoutes = require('./api/routes/orders');
+const userRoutes = require('./api/routes/users');
 /* app.use() sets up a middleware , an incoming request has to go through app.use */
 /* morgan is used for logging the request details to console */
 
@@ -48,7 +49,7 @@ app.use((req, res, next) => {
 app.use('/products', productRoutes);
 /* any request with /orders route , will automatically be forwared to the orders.js file to handle */
 app.use('/orders', orderRoutes);
-
+app.use('/users', userRoutes);
 app.use((req, res, next) => {
     const error = new Error('Nah , Not found');
     error.status = 404;
