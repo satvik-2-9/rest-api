@@ -18,6 +18,7 @@ mongoose.connect('mongodb+srv://node-api:' + process.env.MONGO_ATLAS_PW + '@clus
     });
 mongoose.Promise = global.Promise;
 app.use(morgan('dev'));
+app.use('/uploads',express.static('uploads'));  /* making uploads folder publicly available */
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
