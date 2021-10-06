@@ -99,7 +99,7 @@ router.patch("/:productID", (req, res, next) => {
   Product.updateOne({ _id: req.params.productID }, {
     $set: updateOps
   }).exec()
-    .then(res => {
+    .then(result => {
       res.status(200).json({
         message: 'Product Updated',
         request: {

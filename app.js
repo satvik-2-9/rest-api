@@ -16,7 +16,7 @@ mongoose.connect('mongodb+srv://node-api:' + process.env.MONGO_ATLAS_PW + '@clus
     .catch(err => {
         console.log(err);
     });
-
+mongoose.Promise = global.Promise;
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
